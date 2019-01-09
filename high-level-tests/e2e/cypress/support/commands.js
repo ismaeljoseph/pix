@@ -26,6 +26,8 @@
 
 
 Cypress.Commands.add("login", (email, password) => {
+  cy.server();
+  cy.route('/api/users/me').as('getCurrentUser');
   cy.request({
     url: 'http://localhost:3000/api/authentications',
     method: 'POST',
@@ -38,8 +40,6 @@ Cypress.Commands.add("login", (email, password) => {
       }
     }
   }).then((response) => {
-    debugger;
-    console.log(response.body.data.attributes.token);
     window.localStorage.setItem('ember_simple_auth-session', JSON.stringify({
       authenticated: {
         authenticator: "authenticator:simple",
@@ -47,5 +47,6 @@ Cypress.Commands.add("login", (email, password) => {
         userId: "1"
       }
     }))
-  })
+  });
+  cy.wait(['@getCurrentUser']);
 });
