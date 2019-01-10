@@ -29,7 +29,7 @@ Cypress.Commands.add("login", (email, password) => {
   cy.server();
   cy.route('/api/users/me').as('getCurrentUser');
   cy.request({
-    url: 'http://localhost:3000/api/authentications',
+    url: `${Cypress.env('API_URL')}/api/authentications`,
     method: 'POST',
     body: {
       data: {

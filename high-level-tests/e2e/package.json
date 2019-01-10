@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "cy:test": "npm run db:reloadDB && ./node_modules/.bin/cypress run && exit",
-    "cy:open": "npm run db:reloadDB && ./node_modules/.bin/cypress open",
-    "db:reloadDB": "cd ../../api && npm run db:reset"
+    "cy:test": "npm run db:reload && ./node_modules/.bin/cypress run && exit",
+    "cy:open": "npm run db:reload && ./node_modules/.bin/cypress open",
+    "db:reload": "cd ../../api && npm run db:reset"
   },
   "author": "",
   "license": "ISC",

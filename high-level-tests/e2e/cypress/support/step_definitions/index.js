@@ -1,3 +1,7 @@
+given('la base de données a été réinitialisée', () => {
+  cy.exec('npm run db:reload');
+});
+
 given('je vais sur Pix', () => {
   cy.visit('/');
 });
