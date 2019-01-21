@@ -2,7 +2,6 @@ import { computed } from '@ember/object';
 import { cancel, later } from '@ember/runloop';
 import Component from '@ember/component';
 import RSVP from 'rsvp';
-import callOnlyOnce from '../utils/call-only-once';
 import _ from 'mon-pix/utils/lodash-custom';
 import ENV from 'mon-pix/config/environment';
 
@@ -95,11 +94,11 @@ const ChallengeItemGeneric = Component.extend({
       return this.get('answerValidated')(this.get('challenge'), this.get('assessment'), answerValue, this._getTimeout(), this._getElapsedTime());
     },
 
-    skipChallenge: callOnlyOnce(function() {
+    skipChallenge() {
       this.set('errorMessage', null);
       this.set('_isUserAwareThatChallengeIsTimed', false);
       this.get('answerValidated')(this.get('challenge'), this.get('assessment'), '#ABAND#', this._getTimeout(), this._getElapsedTime());
-    }),
+    },
 
     setUserConfirmation() {
       this._start();
