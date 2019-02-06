@@ -1,8 +1,5 @@
 Feature: Campagne
 
-  Background:
-    Given la base de données a été réinitialisée
-
   Scenario: Je commence mon parcours prescrit
     Given je vais sur Pix
     And je suis connecté à Pix
