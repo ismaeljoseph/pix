@@ -37,13 +37,15 @@ function _getModelName(bookshelfObject) {
   });
 }
 
-// TODO take into account nested objects from relationships in order to manage well the object types
 function _buildDomainObject(bookshelfObject, modelName) {
   const domainObject = new Models[modelName];
+  const bookshelfModelKeys = Object.keys(Bookshelf._models[modelName].extend().__super__);
 
   const mappedObject = _.mapValues(domainObject, (value, key) => {
     const isABelongsToRelationship =
-      attributesForBelongsToRelationships.includes(key) && _getModelName(bookshelfObject[key]);
+      attributesForBelongsToRelationships.includes(key) &&
+      bookshelfModelKeys.includes(key) &&
+      typeof bookshelfObject[key] === 'object';
 
     if (isABelongsToRelationship) {
       return _buildDomainObject(bookshelfObject[key], _.upperFirst(key));
