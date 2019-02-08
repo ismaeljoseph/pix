@@ -2,21 +2,20 @@
 const DatabaseBuilder = require('../../tests/tooling/database-builder/database-builder');
 const pixAileBuilder = require('./data/pix-aile-builder');
 const dragonAndCoBuilder = require('./data/dragon-and-co-builder');
+const usersBuilder = require('./data/users-builder');
+const organizationsBuilder = require('./data/organizations-builder');
+const campaignsBuilder = require('./data/campaigns-builder');
 
 const SEQUENCE_RESTART_AT_NUMBER = 10000000;
 
-// Tables must be inserted in a specific orderr
+// Tables must be inserted in a specific order
 const orderedTableNames = [
-  'users',
   'certification-centers',
   'sessions',
   'assessments',
   'certification-courses',
-  'organizations',
-  'users_pix_roles',
   'answers',
   'assessment-results',
-  'campaigns',
   'certification-challenges',
   'snapshots',
   'competence-marks',
@@ -42,6 +41,9 @@ exports.seed = (knex) => {
   const databaseBuilder = new DatabaseBuilder({ knex });
   pixAileBuilder({ databaseBuilder });
   dragonAndCoBuilder({ databaseBuilder });
+  usersBuilder({ databaseBuilder });
+  organizationsBuilder({ databaseBuilder });
+  campaignsBuilder({ databaseBuilder });
 
   return databaseBuilder.commit()
     .then(() => insertSeeds(knex, orderedTableNames))
