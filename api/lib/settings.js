@@ -75,9 +75,7 @@ module.exports = (function() {
   };
 
   if (process.env.NODE_ENV === 'test') {
-    config.port = null;
-
-    config.app.domain = 'localhost',
+    config.app.domain = 'localhost';
 
     config.airtable = {
       apiKey: 'test-api-key',
