@@ -1,11 +1,9 @@
 const Answer = require('../../domain/models/Answer');
 const answerRepository = require('../../infrastructure/repositories/answer-repository');
 const answerSerializer = require('../../infrastructure/serializers/jsonapi/answer-serializer');
-const BookshelfAnswer = require('../../infrastructure/data/answer');
 const Boom = require('boom');
 const controllerReplies = require('../../infrastructure/controller-replies');
 const infraErrors = require('../../infrastructure/errors');
-const jsYaml = require('js-yaml');
 const logger = require('../../infrastructure/logger');
 const usecases = require('../../domain/usecases');
 const smartPlacementAssessmentRepository =
@@ -16,21 +14,22 @@ const { ChallengeAlreadyAnsweredError, NotFoundError } = require('../../domain/e
 
 function _updateExistingAnswer(existingAnswer, newAnswer) {
   return solutionRepository
-    .getByChallengeId(existingAnswer.get('challengeId'))
+    .getByChallengeId(existingAnswer.challengeId)
     .then((solution) => {
       const answerCorrectness = solutionService.validate(newAnswer, solution);
-      return new BookshelfAnswer({ id: existingAnswer.id })
-        .save({
-          result: answerCorrectness.result,
-          resultDetails: jsYaml.safeDump(answerCorrectness.resultDetails),
-          value: newAnswer.get('value'),
-          timeout: newAnswer.get('timeout'),
-          elapsedTime: newAnswer.get('elapsedTime'),
-          challengeId: newAnswer.get('challengeId'),
-          assessmentId: newAnswer.get('assessmentId'),
-        }, { method: 'update' });
+
+      return answerRepository.save({
+        id: existingAnswer.id,
+        result: answerCorrectness.result,
+        resultDetails: answerCorrectness.resultDetails,
+        value: newAnswer.get('value'),
+        timeout: newAnswer.get('timeout'),
+        elapsedTime: newAnswer.get('elapsedTime'),
+        challengeId: newAnswer.get('challengeId'),
+        assessmentId: newAnswer.get('assessmentId'),
+      });
     })
-    .then(answerSerializer.serializeFromBookshelfAnswer)
+    .then(answerSerializer.serialize)
     .catch((err) => {
       logger.error(err);
       throw Boom.badImplementation(err);
@@ -57,10 +56,8 @@ module.exports = {
   },
 
   get(request) {
-
-    return new BookshelfAnswer({ id: request.params.id })
-      .fetch()
-      .then(answerSerializer.serializeFromBookshelfAnswer)
+    return answerRepository.get(request.params.id)
+      .then(answerSerializer.serialize)
       .catch((err) => logger.error(err));
   },
 
@@ -68,7 +65,7 @@ module.exports = {
 
     const updatedAnswer = answerSerializer.deserializeToBookshelfAnswer(request.payload);
     return answerRepository
-      .findByChallengeAndAssessment(updatedAnswer.get('challengeId'), updatedAnswer.get('assessmentId'))
+      .getByChallengeAndAssessment(updatedAnswer.get('challengeId'), updatedAnswer.get('assessmentId'))
       .then((existingAnswer) => {
 
         if (!existingAnswer) {
@@ -76,7 +73,7 @@ module.exports = {
         }
 
         // XXX if assessment is a Smart Placement, then return 204 and do not update answer. If not proceed normally.
-        return isAssessmentSmartPlacement(existingAnswer.get('assessmentId'))
+        return isAssessmentSmartPlacement(existingAnswer.assessmentId)
           .then((assessmentIsSmartPlacement) => {
 
             if (assessmentIsSmartPlacement) {
@@ -92,8 +89,8 @@ module.exports = {
 
   findByChallengeAndAssessment(request) {
     return answerRepository
-      .findByChallengeAndAssessment(request.url.query.challenge, request.url.query.assessment)
-      .then(answerSerializer.serializeFromBookshelfAnswer)
+      .getByChallengeAndAssessment(request.url.query.challenge, request.url.query.assessment)
+      .then(answerSerializer.serialize)
       .catch((err) => {
         logger.error(err);
         throw Boom.badImplementation(err);

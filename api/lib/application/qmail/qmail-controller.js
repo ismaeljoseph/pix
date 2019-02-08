@@ -36,7 +36,7 @@ module.exports = {
       .getByChallengeId(challengeId)
       .then((foundSolution) => challengeSolution = foundSolution)
       .then(_checkThatChallengeIsQMAIL)
-      .then(() => AnswerRepository.findByChallengeAndAssessment(challengeId, assessmentId))
+      .then(() => AnswerRepository.getByChallengeAndAssessment(challengeId, assessmentId))
       .then((answer) => answer ? _updateAnswerResult(answer, request.payload, challengeSolution.value) : null)
       .catch((err) => {
         if(err instanceof NotFoundError) {

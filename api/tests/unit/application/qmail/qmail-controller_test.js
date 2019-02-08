@@ -37,7 +37,7 @@ describe('Unit | Controller | qmailController', () => {
       answer = new Answer({ result: '#PENDING#' });
       sinon.stub(answer, 'save').resolves();
 
-      sinon.stub(AnswerRepository, 'findByChallengeAndAssessment').resolves(answer);
+      sinon.stub(AnswerRepository, 'getByChallengeAndAssessment').resolves(answer);
       sinon.stub(solutionRepository, 'getByChallengeId').resolves(challengeToEvaluate);
       sinon.stub(QmailValidationService, 'validateEmail').returns(true);
     });
@@ -99,8 +99,8 @@ describe('Unit | Controller | qmailController', () => {
         }, hFake);
 
         // then
-        sinon.assert.calledOnce(AnswerRepository.findByChallengeAndAssessment);
-        sinon.assert.calledWith(AnswerRepository.findByChallengeAndAssessment, challengeId, assessmentId);
+        sinon.assert.calledOnce(AnswerRepository.getByChallengeAndAssessment);
+        sinon.assert.calledWith(AnswerRepository.getByChallengeAndAssessment, challengeId, assessmentId);
       });
 
       context('when analysing the email', () => {
@@ -134,7 +134,7 @@ describe('Unit | Controller | qmailController', () => {
           sinon.assert.calledOnce(QmailValidationService.validateEmail);
           sinon.assert.callOrder(
             solutionRepository.getByChallengeId,
-            AnswerRepository.findByChallengeAndAssessment,
+            AnswerRepository.getByChallengeAndAssessment,
             QmailValidationService.validateEmail,
             answer.save
           );
@@ -148,7 +148,7 @@ describe('Unit | Controller | qmailController', () => {
 
         // then
         sinon.assert.callOrder(
-          AnswerRepository.findByChallengeAndAssessment,
+          AnswerRepository.getByChallengeAndAssessment,
           answer.save,
         );
       });
@@ -159,7 +159,7 @@ describe('Unit | Controller | qmailController', () => {
       it('should return INTERNAL_ERROR when finding the answer is failing', () => {
         // given
         const error = new Error();
-        AnswerRepository.findByChallengeAndAssessment.rejects(error);
+        AnswerRepository.getByChallengeAndAssessment.rejects(error);
 
         // when
         const promise = QmailController.validate({ payload: emailSample }, hFake);
