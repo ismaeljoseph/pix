@@ -56,12 +56,12 @@
     color: $black;
 
     &:hover, &:active, &:focus {
-      background-color: $alto-grey-light;
+      background-color: $alto-grey;
     }
   }
 
   &--grey {
-    background: $gallery-grey;
+    background: $mercury-grey;
     color: $grayish-grey;
 
     &:hover, &:active, &:focus {
@@ -87,7 +87,7 @@
     color: $nero;
 
     &:hover, &:active, &:focus {
-      background-color: $alto-grey-light;
+      background-color: $alto-grey;
     }
   }
 }
